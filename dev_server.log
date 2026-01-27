@@ -1,0 +1,25 @@
+
+> modern-guestbook@0.1.0 dev
+> next dev
+
+▲ Next.js 16.1.5 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+
+✓ Starting...
+✓ Ready in 1081ms
+○ Compiling / ...
+ GET / 200 in 8.3s (compile: 7.2s, render: 1048ms)
+ GET /admin 200 in 1479ms (compile: 1236ms, render: 243ms)
+ GET / 200 in 97ms (compile: 7ms, render: 90ms)
+ GET / 200 in 97ms (compile: 6ms, render: 91ms)
+Error: Turbopack build failed with 1 errors:
+./app
+Error: Next.js inferred your workspace root, but it may not be correct.
+    We couldn't find the Next.js package (next/package.json) from the project directory: /app/app
+     To fix this, set turbopack.root in your Next.js config, or ensure the Next.js package is resolvable from this directory.
+    Note: For security and performance reasons, files outside of the project directory will not be compiled.
+    See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+
+    at ignore-listed frames
+[?25h
