@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Guest Book - SMK Muhammadiyah Bandongan</title>
+    
+    <!-- PWA MANIFEST & THEME -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="apple-touch-icon" href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiN3lb6zD8UmdVfbhENgNWXK1OjWDvwrZVUaEyMyjcOIxgzqIu5wzGUZusOD9WYXVVupp87PQ4lZcZl6ZyzPtFe8h4-TnjMLz31oDylO9UScGA0bi_miR8MKYufzevuezpGhNrpaOrgixQiPBkS9iZb8JalBVD5ueOhN4TB9x3T9N2yG4rwjEdDUGkoK0k/s554/images%20(2).png">
+
+    <!-- STYLES & FONTS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- LIBRARIES (CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+    <script>
+        // CONFIG
+        const TURNSTILE_SITE_KEY = "0x4AAAAAACEvm2Gj39aZbQKD";
+        let formWidgetId = null;
+
+        // DEFINE CALLBACK BEFORE SCRIPT LOADS
+        window.onTurnstileLoad = function() {
+            // Render Form Widget
+            formWidgetId = turnstile.render('#form-turnstile', {
+                sitekey: TURNSTILE_SITE_KEY
+            });
+        };
+    </script>
+    <!-- Cloudflare Turnstile Script -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad" async defer></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; color: #0f172a; overscroll-behavior-y: contain; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        .hidden { display: none !important; }
+        .loader { border: 2px solid #f3f3f3; border-top: 2px solid #0f172a; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <!-- ======================= CLIENT PAGE ======================= -->
+    <div id="page-client" class="min-h-screen py-8 px-4 relative bg-[#F0F6FF]">
+        
+        <!-- Top Left Logo -->
+        <div class="absolute top-4 left-4 md:top-6 md:left-6 z-10">
+             <img src="https://api.deline.web.id/QWzeCf1ENY.jpg" class="h-12 md:h-14 w-auto object-contain rounded-lg shadow-sm bg-white/50 backdrop-blur-sm" alt="Logo SMK">
+        </div>
+
+        <div class="max-w-md mx-auto text-center mb-8 pt-6">
+            <div class="flex justify-center mb-5">
+                <div class="w-24 h-24 bg-white rounded-full shadow-lg shadow-blue-100 flex items-center justify-center p-2">
+                    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiN3lb6zD8UmdVfbhENgNWXK1OjWDvwrZVUaEyMyjcOIxgzqIu5wzGUZusOD9WYXVVupp87PQ4lZcZl6ZyzPtFe8h4-TnjMLz31oDylO9UScGA0bi_miR8MKYufzevuezpGhNrpaOrgixQiPBkS9iZb8JalBVD5ueOhN4TB9x3T9N2yG4rwjEdDUGkoK0k/s554/images%20(2).png" class="w-full h-full object-contain" alt="Logo">
+                </div>
+            </div>
+            <h1 class="text-2xl font-bold text-slate-900 tracking-tight">SMK Muhammadiyah<br/>Bandongan</h1>
+            <p class="text-slate-500 text-sm mt-2">Silakan isi buku tamu di bawah ini</p>
+        </div>
+
+        <!-- Success Message (MODERN CARD WITH VIDEO) -->
+        <div id="client-success" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="bg-white rounded-[2rem] shadow-2xl max-w-sm w-full text-center overflow-hidden border border-white/50 transform transition-all scale-100">
+                
+                <!-- Video Section -->
+                <div class="relative w-full aspect-video bg-slate-100">
+                    <video id="success-video" src="https://files.catbox.moe/mhj67s.mp4" playsinline loop muted class="w-full h-full object-cover"></video>
+                    <!-- Gradient Overlay -->
+                    <div class="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent opacity-50"></div>
+                </div>
+
+                <!-- Text Content -->
+                <div class="p-8 pt-2">
+                    <div class="mx-auto w-16 h-16 bg-green-100 border-4 border-white rounded-full flex items-center justify-center mb-4 shadow-lg -mt-10 relative z-10">
+                        <i data-lucide="check" class="w-8 h-8 text-green-600"></i>
+                    </div>
+                    
+                    <h2 class="text-2xl font-bold text-slate-900 mb-2">Berhasil Tersimpan!</h2>
+                    <p class="text-slate-500 mb-8 text-sm leading-relaxed">Terima kasih atas kunjungan Anda.<br>Data telah berhasil masuk ke sistem.</p>
+                    
+                    <button onclick="resetClientForm()" class="w-full py-3.5 bg-slate-900 text-white rounded-xl font-semibold hover:bg-slate-800 transition shadow-lg shadow-slate-300 active:scale-[0.98]">
+                        Isi Buku Tamu Lagi
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Container -->
+        <div class="max-w-[500px] mx-auto bg-white rounded-[2rem] shadow-xl shadow-blue-100/50 overflow-hidden mb-8 border border-slate-100">
+            <div class="bg-slate-900 px-8 py-6 text-center relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-full bg-white/10"></div>
+                <h2 class="text-xl font-bold text-white relative z-10">Buku Tamu Digital</h2>
+                <p class="text-slate-300 text-xs mt-1 relative z-10">Mohon isi data dengan benar</p>
+            </div>
+            
+            <form id="client-form" class="p-6 md:p-8 space-y-6">
+                <!-- Error Alert -->
+                <div id="client-error" class="hidden bg-red-50 text-red-600 p-4 rounded-2xl text-sm border border-red-100 flex items-start">
+                    <i data-lucide="info" class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5"></i>
+                    <span id="client-error-text"></span>
+                </div>
+
+                <!-- Nama -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Nama Lengkap *</label>
+                    <div class="relative">
+                        <i data-lucide="user" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"></i>
+                        <input type="text" id="inp-nama" class="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition" placeholder="Nama Lengkap Anda" required>
+                    </div>
+                </div>
+
+                <!-- Waktu -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-3">Waktu Kehadiran</label>
+                    <div class="bg-slate-50 p-1.5 rounded-xl flex mb-3 border border-slate-200">
+                        <label class="flex-1 text-center cursor-pointer">
+                            <input type="radio" name="timeMode" value="auto" checked onchange="toggleTimeMode()" class="hidden peer">
+                            <span class="block py-2 text-sm font-medium text-slate-500 rounded-lg peer-checked:bg-white peer-checked:text-blue-600 peer-checked:shadow-sm transition">Otomatis</span>
+                        </label>
+                        <label class="flex-1 text-center cursor-pointer">
+                            <input type="radio" name="timeMode" value="manual" onchange="toggleTimeMode()" class="hidden peer">
+                            <span class="block py-2 text-sm font-medium text-slate-500 rounded-lg peer-checked:bg-white peer-checked:text-blue-600 peer-checked:shadow-sm transition">Manual</span>
+                        </label>
+                    </div>
+                    
+                    <div id="time-auto-display" class="w-full px-4 py-3.5 bg-blue-50 border border-blue-100 rounded-2xl text-blue-700 flex justify-between items-center font-medium">
+                        <span id="current-time-text">Checking time...</span>
+                        <i data-lucide="clock" class="w-5 h-5 opacity-70"></i>
+                    </div>
+                    <input type="datetime-local" id="inp-date-manual" class="hidden w-full px-4 py-3.5 bg-white border border-slate-200 rounded-2xl text-slate-900 outline-none focus:border-blue-500">
+                </div>
+
+                <!-- Instansi -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Asal Instansi</label>
+                    <div class="relative">
+                        <i data-lucide="building-2" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"></i>
+                        <input type="text" id="inp-instansi" class="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition" placeholder="Instansi / Organisasi / Umum">
+                    </div>
+                </div>
+
+                <!-- Maksud -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Maksud & Tujuan</label>
+                    <textarea id="inp-maksud" rows="2" class="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none resize-none transition" placeholder="Tujuan kunjungan Anda..."></textarea>
+                </div>
+
+                <!-- Pesan -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Kesan & Pesan</label>
+                    <textarea id="inp-pesan" rows="2" class="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none resize-none transition" placeholder="Pesan untuk sekolah..."></textarea>
+                </div>
+
+                <!-- Foto -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Foto Dokumentasi *</label>
+                    
+                    <div id="camera-placeholder" class="relative w-full bg-slate-50 border-2 border-dashed border-slate-300 rounded-2xl p-8 text-center cursor-pointer hover:bg-slate-100 hover:border-blue-400 transition group" onclick="document.getElementById('inp-file').click()">
+                        <div class="w-12 h-12 bg-white rounded-full shadow-sm flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition">
+                            <i data-lucide="camera" class="w-6 h-6 text-blue-500"></i>
+                        </div>
+                        <span class="text-sm font-medium text-slate-600 block">Ambil Foto / Upload</span>
+                        <span class="text-xs text-slate-400 mt-1 block">Format JPG/PNG</span>
+                    </div>
+
+                    <!-- FIXED PREVIEW CONTAINER -->
+                    <div id="image-preview-container" class="hidden relative rounded-2xl overflow-hidden border border-slate-200 shadow-sm group bg-slate-900">
+                        <img id="image-preview" src="" class="w-full h-64 object-contain mx-auto">
+                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                             <button type="button" onclick="clearImage()" class="bg-white px-4 py-2 rounded-full text-red-600 font-medium text-sm hover:bg-red-50 flex items-center">
+                                <i data-lucide="trash-2" class="w-4 h-4 mr-2"></i> Hapus Foto
+                             </button>
+                        </div>
+                    </div>
+                    
+                    <input type="file" id="inp-file" accept="image/*" class="hidden" onchange="handleFileSelect(this)">
+                </div>
+
+                <!-- Tanda Tangan -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Tanda Tangan *</label>
+                    <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white relative shadow-sm">
+                        <canvas id="signature-canvas" class="w-full h-48 block cursor-crosshair" style="touch-action: none;"></canvas>
+                        <div class="absolute top-3 left-3 pointer-events-none opacity-20">
+                            <i data-lucide="pen-tool" class="w-5 h-5"></i>
+                        </div>
+                    </div>
+                    <div class="flex justify-end mt-2">
+                        <button type="button" onclick="clearSignature()" class="text-xs text-red-500 flex items-center gap-1 hover:text-red-700 font-medium px-3 py-1.5 bg-red-50 rounded-lg transition">
+                            <i data-lucide="eraser" class="w-3 h-3"></i> Bersihkan
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Turnstile in Form -->
+                <div class="flex justify-center">
+                    <div id="form-turnstile"></div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="btn-submit" class="w-full py-4 rounded-xl font-bold text-white bg-slate-900 hover:bg-slate-800 active:scale-[0.98] transition-all flex justify-center items-center shadow-lg shadow-slate-300">
+                    <span id="btn-submit-text">Simpan Data Tamu</span>
+                    <div id="btn-submit-loader" class="loader ml-2 hidden border-white border-t-transparent"></div>
+                </button>
+            </form>
+        </div>
+
+        <div class="flex justify-center pb-8">
+            <a href="/admin" class="flex items-center text-sm text-slate-400 hover:text-slate-900 font-medium transition py-2 px-4 rounded-lg hover:bg-white/50">
+                <i data-lucide="lock" class="w-3 h-3 mr-2"></i> Area Admin
+            </a>
+        </div>
+    </div>
+
+    <!-- PWA Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('SW registered:', registration);
+                    })
+                    .catch(error => {
+                        console.log('SW registration failed:', error);
+                    });
+            });
+        }
+    </script>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- CONFIGURATION ---
+        const SUPABASE_URL = "https://nvegzmpajoaryegqbunj.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52ZWd6bXBham9hcnllZ3FidW5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxNDk5MzMsImV4cCI6MjA3OTcyNTkzM30.NSx3E9zJcgR-k2OTJWLM820ilZ3TVYZs6npjc0y5ADU";
+        const SUPABASE_TABLE = "userdata";
+        
+        // API 1: Deline
+        const UPLOAD_DELINE = "https://api.deline.web.id/uploader";
+        // API 2: Termai
+        const UPLOAD_TERMAI = "https://c.termai.cc/api/upload";
+        const KEY_TERMAI = "AIzaBj7z2z3xBjsk";
+
+        const { createClient } = supabase;
+        const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let signaturePad;
+        let selectedFile = null;
+        let activeApi = 'deline'; // default
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+            
+            // Check API Health on Load (SILENTLY)
+            checkApiHealth();
+
+            // Init Signature
+            const canvas = document.getElementById('signature-canvas');
+            function resizeCanvas() {
+                const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                canvas.width = canvas.offsetWidth * ratio;
+                canvas.height = canvas.offsetHeight * ratio;
+                canvas.getContext("2d").scale(ratio, ratio);
+            }
+            window.addEventListener("resize", resizeCanvas);
+            resizeCanvas();
+            try {
+                signaturePad = new SignaturePad(canvas, { backgroundColor: 'rgb(255, 255, 255)' });
+            } catch (e) { console.error(e); }
+
+            // Clock
+            setInterval(() => {
+                const now = new Date();
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+                const timeEl = document.getElementById('current-time-text');
+                if(timeEl) timeEl.innerText = now.toLocaleDateString('id-ID', options);
+            }, 1000);
+        });
+
+        // --- UPLOAD ENGINES ---
+        async function uploadDeline(fileBlob, ext) {
+            const fd = new FormData();
+            const fileName = "upload_" + Date.now() + "." + ext;
+            fd.append("file", fileBlob, fileName);
+            try {
+                const res = await axios.post(UPLOAD_DELINE, fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+                const data = res.data || {};
+                if (data.status === false) throw new Error(data.message || "Deline status false");
+                return data?.result?.link || data?.url || data?.path;
+            } catch (error) { throw new Error("Deline Error: " + error.message); }
+        }
+
+        async function uploadTermai(fileBlob, ext) {
+            const fd = new FormData();
+            const fileName = "file." + ext;
+            fd.append('file', fileBlob, fileName);
+            try {
+                const res = await axios.post(`${UPLOAD_TERMAI}?key=${KEY_TERMAI}`, fd, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+                if (res.data && res.data.status) {
+                    return res.data.path;
+                }
+                throw new Error("Termai status returned false");
+            } catch (error) { throw new Error("Termai Error: " + error.message); }
+        }
+
+        async function smartUpload(fileBlob, ext) {
+            if (activeApi === 'deline') {
+                try { return await uploadDeline(fileBlob, ext); } 
+                catch (e1) { console.warn("Deline failed, switching...", e1); return await uploadTermai(fileBlob, ext); }
+            } else {
+                try { return await uploadTermai(fileBlob, ext); } 
+                catch (e1) { console.warn("Termai failed, switching...", e1); return await uploadDeline(fileBlob, ext); }
+            }
+        }
+
+        async function checkApiHealth() {
+            const testBlob = new Blob(["test"], { type: 'text/plain' });
+            const start = Date.now();
+            try {
+                const pDeline = uploadDeline(testBlob, "txt").then(() => ({api: 'deline', time: Date.now() - start}));
+                const pTermai = uploadTermai(testBlob, "txt").then(() => ({api: 'termai', time: Date.now() - start}));
+                const result = await Promise.any([pDeline, pTermai]);
+                activeApi = result.api;
+            } catch (err) { console.error("APIs unreachable", err); }
+        }
+
+        // --- CLIENT FORM LOGIC ---
+        function toggleTimeMode() {
+            const mode = document.querySelector('input[name="timeMode"]:checked').value;
+            if (mode === 'auto') {
+                document.getElementById('time-auto-display').classList.remove('hidden');
+                document.getElementById('inp-date-manual').classList.add('hidden');
+            } else {
+                document.getElementById('time-auto-display').classList.add('hidden');
+                document.getElementById('inp-date-manual').classList.remove('hidden');
+                if (!document.getElementById('inp-date-manual').value) {
+                    const now = new Date();
+                    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                    document.getElementById('inp-date-manual').value = now.toISOString().slice(0, 16);
+                }
+            }
+        }
+
+        function handleFileSelect(input) {
+            if (input.files && input.files[0]) {
+                selectedFile = input.files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('image-preview').src = e.target.result;
+                    document.getElementById('image-preview-container').classList.remove('hidden');
+                    document.getElementById('camera-placeholder').classList.add('hidden');
+                }
+                reader.readAsDataURL(selectedFile);
+            }
+        }
+
+        function clearImage() {
+            selectedFile = null;
+            document.getElementById('inp-file').value = '';
+            document.getElementById('image-preview-container').classList.add('hidden');
+            document.getElementById('camera-placeholder').classList.remove('hidden');
+        }
+
+        function clearSignature() { if (signaturePad) signaturePad.clear(); }
+
+        document.getElementById('client-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nama = document.getElementById('inp-nama').value;
+            const instansi = document.getElementById('inp-instansi').value || '-';
+            const maksud = document.getElementById('inp-maksud').value || '-';
+            const pesan = document.getElementById('inp-pesan').value || '-';
+            const timeMode = document.querySelector('input[name="timeMode"]:checked').value;
+            let tanggal = new Date().toISOString();
+            
+            const errorDiv = document.getElementById('client-error');
+            const errorText = document.getElementById('client-error-text');
+            const btnSubmit = document.getElementById('btn-submit');
+            const btnText = document.getElementById('btn-submit-text');
+            const btnLoader = document.getElementById('btn-submit-loader');
+
+            errorDiv.classList.add('hidden');
+
+            // Turnstile Check
+            if (formWidgetId !== null) {
+                const turnstileResponse = turnstile.getResponse(formWidgetId);
+                if (!turnstileResponse) {
+                    errorText.innerText = "Silakan selesaikan verifikasi keamanan (Captcha) di bawah.";
+                    errorDiv.classList.remove('hidden');
+                    return;
+                }
+            }
+
+            if (!nama) { errorText.innerText = "Nama Lengkap wajib diisi."; errorDiv.classList.remove('hidden'); return; }
+            if (timeMode === 'manual') {
+                const manualDateVal = document.getElementById('inp-date-manual').value;
+                if (!manualDateVal) { errorText.innerText = "Silakan pilih waktu kehadiran."; errorDiv.classList.remove('hidden'); return; }
+                tanggal = new Date(manualDateVal).toISOString();
+            }
+            if (!selectedFile) { errorText.innerText = "Harap ambil/upload foto dokumentasi."; errorDiv.classList.remove('hidden'); return; }
+            if (!signaturePad || signaturePad.isEmpty()) { errorText.innerText = "Harap bubuhkan tanda tangan."; errorDiv.classList.remove('hidden'); return; }
+
+            btnSubmit.disabled = true; btnText.innerText = "Menyimpan...";
+            btnLoader.classList.remove('hidden'); btnSubmit.classList.add('opacity-75');
+
+            try {
+                const imageUrl = await smartUpload(selectedFile, "jpg");
+                const signatureDataURL = signaturePad.toDataURL("image/png");
+                const resSign = await fetch(signatureDataURL);
+                const signatureBlob = await resSign.blob();
+                const signatureUrl = await smartUpload(signatureBlob, "png");
+
+                const { error } = await _supabase.from(SUPABASE_TABLE).insert({
+                    nama, instansi, maksud, tujuan: pesan,
+                    image_url: imageUrl, signature_url: signatureUrl, tanggal
+                });
+                if (error) throw error;
+                
+                const successModal = document.getElementById('client-success');
+                successModal.classList.remove('hidden');
+                
+                const vid = document.getElementById('success-video');
+                if (vid) { vid.muted = true; vid.currentTime = 0; vid.play().catch(e => console.log("Autoplay blocked:", e)); }
+
+            } catch (err) {
+                console.error(err);
+                errorText.innerText = "Gagal: " + (err.message || "Kesalahan server.");
+                errorDiv.classList.remove('hidden');
+            } finally {
+                btnSubmit.disabled = false; btnText.innerText = "Simpan Data Tamu";
+                btnLoader.classList.add('hidden'); btnSubmit.classList.remove('opacity-75');
+            }
+        });
+
+        function resetClientForm() {
+            const vid = document.getElementById('success-video');
+            if (vid) vid.pause();
+            document.getElementById('client-form').reset();
+            clearImage(); clearSignature();
+            document.getElementById('client-success').classList.add('hidden');
+            document.querySelector('input[name="timeMode"][value="auto"]').checked = true;
+            toggleTimeMode();
+            if (formWidgetId) turnstile.reset(formWidgetId);
+            checkApiHealth();
+        }
+    </script>
+</body>
+</html>
