@@ -1,0 +1,42 @@
+"use client";
+
+import { motion } from "framer-motion";
+import { Lock } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
+
+export function Navbar() {
+  return (
+    <motion.nav
+      initial={{ y: -100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      className="fixed top-0 left-0 right-0 z-50 px-6 py-4 flex justify-between items-center bg-slate-950/20 backdrop-blur-md border-b border-white/5"
+    >
+      <Link href="/" className="flex items-center gap-3 group">
+        <div className="relative w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center border border-white/10 group-hover:border-blue-500/50 transition-all">
+          <Image
+            src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiN3lb6zD8UmdVfbhENgNWXK1OjWDvwrZVUaEyMyjcOIxgzqIu5wzGUZusOD9WYXVVupp87PQ4lZcZl6ZyzPtFe8h4-TnjMLz31oDylO9UScGA0bi_miR8MKYufzevuezpGhNrpaOrgixQiPBkS9iZb8JalBVD5ueOhN4TB9x3T9N2yG4rwjEdDUGkoK0k/s554/images%20(2).png"
+            alt="Logo"
+            width={32}
+            height={32}
+            className="object-contain"
+          />
+        </div>
+        <div className="hidden sm:block">
+          <h1 className="text-sm font-bold tracking-tight text-white leading-none">SMK Muhammadiyah</h1>
+          <p className="text-[10px] text-blue-400 font-medium tracking-widest uppercase">Bandongan</p>
+        </div>
+      </Link>
+
+      <div className="flex items-center gap-4">
+        <Link
+          href="/admin"
+          className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-xs font-semibold text-white/70 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all"
+        >
+          <Lock className="w-3 h-3" />
+          <span>Admin Area</span>
+        </Link>
+      </div>
+    </motion.nav>
+  );
+}
