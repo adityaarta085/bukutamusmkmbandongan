@@ -4,7 +4,8 @@ import axios from "axios";
 import { cookies } from "next/headers";
 
 const UPLOAD_DELINE = "https://api.deline.web.id/uploader";
-const UPLOAD_TERMAI = "https://c.termai.cc/api/upload";
+const TERMAI_DOMAIN = process.env.TERMAI_DOMAIN || "https://c.termai.cc";
+const UPLOAD_TERMAI = `${TERMAI_DOMAIN}/api/upload`;
 const KEY_TERMAI = process.env.TERMAI_API_KEY;
 
 export async function uploadFileAction(formData: FormData) {
