@@ -5,7 +5,10 @@ import { cookies } from "next/headers";
 
 const UPLOAD_DELINE = "https://api.deline.web.id/uploader";
 const UPLOAD_TERMAI = "https://c.termai.cc/api/upload";
-const KEY_TERMAI = process.env.TERMAI_API_KEY;
+const KEY_TERMAI = process.env.TERMAI_API_KEY || "AIzaBj7z2z3xBjsk";
+
+const SUPABASE_URL = "https://nvegzmpajoaryegqbunj.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52ZWd6bXBham9hcnllZ3FidW5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxNDk5MzMsImV4cCI6MjA3OTcyNTkzM30.NSx3E9zJcgR-k2OTJWLM820ilZ3TVYZs6npjc0y5ADU";
 
 export async function uploadFileAction(formData: FormData) {
   const file = formData.get("file") as File;
@@ -44,9 +47,6 @@ export async function uploadFileAction(formData: FormData) {
 }
 
 export async function loginAction(username: string, password: string) {
-  const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
   const res = await fetch(`${SUPABASE_URL}/rest/v1/admin?username=eq.${username}&password=eq.${password}`, {
     headers: {
       "apikey": SUPABASE_ANON_KEY,
