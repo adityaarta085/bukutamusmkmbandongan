@@ -1,11 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://nvegzmpajoaryegqbunj.supabase.co";
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52ZWd6bXBham9hcnllZ3FidW5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxNDk5MzMsImV4cCI6MjA3OTcyNTkzM30.NSx3E9zJcgR-k2OTJWLM820ilZ3TVYZs6npjc0y5ADU";
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-export const SUPABASE_TABLE = "userdata";
+export const SUPABASE_TABLE = process.env.NEXT_PUBLIC_SUPABASE_TABLE || "userdata";
 export const SUPABASE_ADMIN_TABLE = "admin";
 
 export interface GuestBookEntry {
