@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   User, Building2, MessageSquare, Camera, PenTool,
@@ -306,7 +307,7 @@ export function GuestBookForm() {
                   </label>
                 ) : (
                   <div className="relative w-full h-80 rounded-[2.5rem] overflow-hidden border border-white/10 shadow-2xl">
-                    <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                    <Image src={imagePreview} alt="Preview" fill className="object-cover" unoptimized />
                     <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                       <button
                         type="button"

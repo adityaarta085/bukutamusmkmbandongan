@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -328,15 +329,15 @@ export default function Dashboard() {
                       <td className="p-6">
                         <div className="flex justify-center gap-2">
                            {item.image_url ? (
-                             <a href={item.image_url} target="_blank" className="w-10 h-10 rounded-lg overflow-hidden border border-white/10 bg-slate-800 group-hover:border-blue-500/50 transition-all">
-                               <img src={item.image_url} alt="Foto" className="w-full h-full object-cover" />
+                             <a href={item.image_url} target="_blank" className="w-10 h-10 relative rounded-lg overflow-hidden border border-white/10 bg-slate-800 group-hover:border-blue-500/50 transition-all">
+                               <Image src={item.image_url} alt="Foto" fill className="object-cover" />
                              </a>
                            ) : (
                              <div className="w-10 h-10 rounded-lg border border-white/10 bg-white/5 flex items-center justify-center"><ImageIcon className="w-4 h-4 text-slate-700" /></div>
                            )}
                            {item.signature_url ? (
-                             <a href={item.signature_url} target="_blank" className="w-10 h-10 rounded-lg overflow-hidden border border-white/10 bg-white p-1 group-hover:border-blue-500/50 transition-all">
-                               <img src={item.signature_url} alt="TTD" className="w-full h-full object-contain" />
+                             <a href={item.signature_url} target="_blank" className="w-10 h-10 relative rounded-lg overflow-hidden border border-white/10 bg-white p-1 group-hover:border-blue-500/50 transition-all">
+                               <Image src={item.signature_url} alt="TTD" fill className="object-contain p-1" />
                              </a>
                            ) : (
                              <div className="w-10 h-10 rounded-lg border border-white/10 bg-white/5 flex items-center justify-center"><PenTool className="w-4 h-4 text-slate-700" /></div>
