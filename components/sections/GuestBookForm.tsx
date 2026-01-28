@@ -31,7 +31,24 @@ export function GuestBookForm() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const sigCanvas = useRef<SignatureCanvas>(null);
+  const sigContainerRef = useRef<HTMLDivElement>(null);
   const [currentTime, setCurrentTime] = useState("");
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (sigContainerRef.current && sigCanvas.current) {
+        const canvas = sigCanvas.current.getCanvas();
+        const container = sigContainerRef.current;
+        canvas.width = container.offsetWidth;
+        canvas.height = container.offsetHeight;
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize();
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -196,7 +213,7 @@ export function GuestBookForm() {
                   type="text"
                   value={nama}
                   onChange={(e) => setNama(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-2xl focus:border-blue-500/50 focus:bg-white/10 outline-none transition-all text-white"
+                  className="w-full pl-12 pr-4 py-4 bg-white/[0.03] border border-white/10 rounded-2xl focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 focus:bg-white/[0.05] outline-none transition-all text-white placeholder:text-slate-600"
                   placeholder="Masukkan nama lengkap"
                   required
                 />
@@ -212,7 +229,7 @@ export function GuestBookForm() {
                   type="text"
                   value={instansi}
                   onChange={(e) => setInstansi(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-2xl focus:border-blue-500/50 focus:bg-white/10 outline-none transition-all text-white"
+                  className="w-full pl-12 pr-4 py-4 bg-white/[0.03] border border-white/10 rounded-2xl focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 focus:bg-white/[0.05] outline-none transition-all text-white placeholder:text-slate-600"
                   placeholder="Instansi / Sekolah / Umum"
                 />
               </div>
@@ -245,8 +262,8 @@ export function GuestBookForm() {
               </button>
             </div>
             {timeMode === "auto" ? (
-              <div className="p-4 bg-blue-500/5 border border-blue-500/20 rounded-2xl flex justify-between items-center">
-                <span className="text-blue-400 font-medium">{currentTime || "Loading..."}</span>
+              <div className="p-4 bg-blue-500/[0.03] border border-blue-500/20 rounded-2xl flex justify-between items-center">
+                <span className="text-blue-400 font-bold tracking-tight">{currentTime || "Loading..."}</span>
                 <Clock className="w-5 h-5 text-blue-500/50" />
               </div>
             ) : (
@@ -254,7 +271,7 @@ export function GuestBookForm() {
                 type="datetime-local"
                 value={manualTime}
                 onChange={(e) => setManualTime(e.target.value)}
-                className="w-full px-4 py-4 bg-white/5 border border-white/10 rounded-2xl focus:border-blue-500/50 focus:bg-white/10 outline-none transition-all text-white"
+                className="w-full px-4 py-4 bg-white/[0.03] border border-white/10 rounded-2xl focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all text-white"
               />
             )}
           </div>
@@ -269,7 +286,7 @@ export function GuestBookForm() {
                     value={maksud}
                     onChange={(e) => setMaksud(e.target.value)}
                     rows={2}
-                    className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-2xl focus:border-blue-500/50 focus:bg-white/10 outline-none transition-all text-white resize-none"
+                    className="w-full pl-12 pr-4 py-4 bg-white/[0.03] border border-white/10 rounded-2xl focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 focus:bg-white/[0.05] outline-none transition-all text-white resize-none placeholder:text-slate-600"
                     placeholder="Maksud kunjungan..."
                   />
                </div>
@@ -279,7 +296,7 @@ export function GuestBookForm() {
                     value={pesan}
                     onChange={(e) => setPesan(e.target.value)}
                     rows={2}
-                    className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-2xl focus:border-blue-500/50 focus:bg-white/10 outline-none transition-all text-white resize-none"
+                    className="w-full pl-12 pr-4 py-4 bg-white/[0.03] border border-white/10 rounded-2xl focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 focus:bg-white/[0.05] outline-none transition-all text-white resize-none placeholder:text-slate-600"
                     placeholder="Kesan & Pesan..."
                   />
                </div>
@@ -297,8 +314,8 @@ export function GuestBookForm() {
               <label className="text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">Foto Dokumentasi *</label>
               <div className="relative group">
                 {!imagePreview ? (
-                  <label className="flex flex-col items-center justify-center w-full h-64 bg-white/5 border-2 border-dashed border-white/10 rounded-[2.5rem] cursor-pointer hover:bg-white/10 hover:border-blue-500/50 transition-all group shadow-inner">
-                    <div className="p-6 rounded-full bg-blue-500/10 group-hover:scale-110 transition-transform duration-500">
+                  <label className="flex flex-col items-center justify-center w-full h-64 bg-white/[0.03] border-2 border-dashed border-white/10 rounded-[2.5rem] cursor-pointer hover:bg-white/[0.08] hover:border-blue-500/50 transition-all group shadow-inner">
+                    <div className="p-6 rounded-full bg-blue-500/10 group-hover:scale-110 transition-transform duration-500 shadow-xl group-hover:shadow-blue-500/20">
                       <Camera className="w-10 h-10 text-blue-500" />
                     </div>
                     <span className="text-base text-slate-400 mt-4 font-semibold tracking-wide">Klik untuk Ambil Foto</span>
@@ -330,7 +347,7 @@ export function GuestBookForm() {
               className="space-y-3"
             >
               <label className="text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">Tanda Tangan Digital *</label>
-              <div className="relative bg-white rounded-[2.5rem] overflow-hidden h-80 border-4 border-blue-500/20 shadow-2xl group">
+              <div ref={sigContainerRef} className="relative bg-white rounded-[2.5rem] overflow-hidden h-80 border-4 border-blue-500/20 shadow-2xl group">
                 <SignatureCanvas
                   ref={sigCanvas}
                   penColor="#020617"

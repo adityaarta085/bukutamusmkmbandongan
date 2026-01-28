@@ -4,23 +4,29 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { useRef, useMemo } from "react";
 import * as THREE from "three";
 
-function Particles({ count = 2000 }) {
+function Particles({ count = 4000 }) {
   const points = useRef<THREE.Points>(null!);
 
   const particles = useMemo(() => {
     const positions = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 10;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 10;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 10;
+      positions[i * 3] = (Math.random() - 0.5) * 12;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 12;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 12;
     }
     return positions;
   }, [count]);
 
   useFrame((state) => {
-    const time = state.clock.getElapsedTime() * 0.1;
+    const time = state.clock.getElapsedTime() * 0.05;
     points.current.rotation.y = time;
-    points.current.rotation.x = time * 0.5;
+    points.current.rotation.x = time * 0.2;
+
+    // Mouse Parallax
+    const mouseX = state.mouse.x * 0.2;
+    const mouseY = state.mouse.y * 0.2;
+    points.current.position.x = THREE.MathUtils.lerp(points.current.position.x, mouseX, 0.1);
+    points.current.position.y = THREE.MathUtils.lerp(points.current.position.y, mouseY, 0.1);
   });
 
   return (
