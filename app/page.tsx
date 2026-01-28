@@ -16,7 +16,7 @@ export default function Home() {
 
         <Marquee text="Selamat Datang di Buku Tamu Digital SMK Muhammadiyah Bandongan" className="mb-20" />
 
-        <section className="px-6 pb-32">
+        <section className="px-4 md:px-6 pb-32">
           <GSAPReveal>
             <GuestBookForm />
           </GSAPReveal>

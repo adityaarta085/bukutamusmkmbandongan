@@ -9,9 +9,9 @@ interface MarqueeProps {
   speed?: number;
 }
 
-export const Marquee = ({ text, className, speed = 20 }: MarqueeProps) => {
+export const Marquee = ({ text, className, speed = 30 }: MarqueeProps) => {
   return (
-    <div className={cn("relative flex overflow-x-hidden border-y border-white/5 bg-white/[0.02] py-3 backdrop-blur-sm", className)}>
+    <div className={cn("relative flex overflow-x-hidden border-y border-white/5 bg-white/[0.02] py-6 backdrop-blur-sm group", className)}>
       <motion.div
         animate={{
           x: ["0%", "-50%"],
@@ -21,14 +21,18 @@ export const Marquee = ({ text, className, speed = 20 }: MarqueeProps) => {
           duration: speed,
           repeat: Infinity,
         }}
-        className="flex whitespace-nowrap"
+        className="flex whitespace-nowrap group-hover:[animation-play-state:paused]"
       >
-        <span className="mx-4 text-sm font-bold uppercase tracking-[0.2em] text-blue-400/80">
-          {text} &nbsp; • &nbsp; {text} &nbsp; • &nbsp; {text} &nbsp; • &nbsp; {text} &nbsp; • &nbsp;
-        </span>
-        <span className="mx-4 text-sm font-bold uppercase tracking-[0.2em] text-blue-400/80">
-          {text} &nbsp; • &nbsp; {text} &nbsp; • &nbsp; {text} &nbsp; • &nbsp; {text} &nbsp; • &nbsp;
-        </span>
+        {[...Array(4)].map((_, i) => (
+          <span key={i} className="mx-8 text-xl md:text-2xl font-black uppercase tracking-[0.3em] text-transparent bg-clip-text bg-gradient-to-r from-blue-500/40 via-blue-400/60 to-blue-500/40">
+            {text} &nbsp; • &nbsp;
+          </span>
+        ))}
+        {[...Array(4)].map((_, i) => (
+          <span key={i + 4} className="mx-8 text-xl md:text-2xl font-black uppercase tracking-[0.3em] text-transparent bg-clip-text bg-gradient-to-r from-blue-500/40 via-blue-400/60 to-blue-500/40">
+            {text} &nbsp; • &nbsp;
+          </span>
+        ))}
       </motion.div>
     </div>
   );
