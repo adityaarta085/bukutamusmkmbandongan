@@ -3,6 +3,7 @@ import FuturisticBackground from "@/components/canvas/FuturisticBackground";
 import { Hero } from "@/components/sections/Hero";
 import { GuestBookForm } from "@/components/sections/GuestBookForm";
 import { GSAPReveal } from "@/components/GSAPReveal";
+import { Marquee } from "@/components/ui/Marquee";
 
 export default function Home() {
   return (
@@ -12,6 +13,8 @@ export default function Home() {
 
       <div className="relative z-10">
         <Hero />
+
+        <Marquee text="Selamat Datang di Buku Tamu Digital SMK Muhammadiyah Bandongan" className="mb-20" />
 
         <section className="px-6 pb-32">
           <GSAPReveal>

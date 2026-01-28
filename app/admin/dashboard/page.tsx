@@ -23,6 +23,7 @@ export default function Dashboard() {
   const [filteredData, setFilteredData] = useState<GuestBookEntry[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isPremium, setIsPremium] = useState(false);
+  const [selectedEntry, setSelectedEntry] = useState<GuestBookEntry | null>(null);
   const [stats, setStats] = useState({
     total: 0,
     today: 0,
@@ -141,7 +142,37 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white flex relative">
+    <div className="min-h-screen bg-slate-950 text-white flex relative overflow-hidden">
+      {/* Background blobs */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          animate={{
+            scale: [1, 1.2, 1],
+            x: [0, 100, 0],
+            y: [0, 50, 0],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+          className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full"
+        />
+        <motion.div
+          animate={{
+            scale: [1, 1.3, 1],
+            x: [0, -100, 0],
+            y: [0, -50, 0],
+          }}
+          transition={{
+            duration: 25,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+          className="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] bg-purple-600/10 blur-[120px] rounded-full"
+        />
+      </div>
+
       {/* Sidebar Overlay (Mobile) */}
       {isSidebarOpen && (
         <div
@@ -222,38 +253,47 @@ export default function Dashboard() {
         </header>
 
         {/* Content */}
-        <div className="p-8 max-w-7xl mx-auto w-full space-y-8">
+        <div className="p-4 md:p-8 max-w-7xl mx-auto w-full space-y-6 md:space-y-8">
           {/* Welcome Card */}
-          <div className="relative rounded-[2rem] overflow-hidden p-8 md:p-12 bg-gradient-to-br from-blue-600 to-purple-800 shadow-2xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="relative rounded-[2rem] overflow-hidden p-8 md:p-12 bg-gradient-to-br from-blue-600 to-purple-800 shadow-2xl"
+          >
             <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
             <div className="relative z-10">
-              <h2 className="text-3xl md:text-4xl font-black mb-4">Selamat Datang di Panel Admin</h2>
-              <p className="text-blue-100/80 max-w-xl text-lg leading-relaxed">
+              <h2 className="text-2xl md:text-4xl font-black mb-2 md:mb-4">Selamat Datang di Panel Admin</h2>
+              <p className="text-blue-100/80 max-w-xl text-sm md:text-lg leading-relaxed">
                 Kelola semua data kunjungan tamu dengan sistem yang modern, cepat, dan aman.
                 Pantau statistik secara real-time.
               </p>
             </div>
-          </div>
+          </motion.div>
 
           {/* Stats Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
              <StatCard label="Total Tamu" value={stats.total} icon={<Users />} color="blue" index={0} />
              <StatCard label="Hari Ini" value={stats.today} icon={<Calendar />} color="green" index={1} />
              <StatCard label="Bulan Ini" value={stats.month} icon={<BarChart3 />} color="purple" index={2} />
-             <div className="bg-white/5 border border-white/10 p-6 rounded-[2rem] flex flex-col justify-between">
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Kelengkapan</p>
-                <div className="flex items-end gap-4 mt-2">
+             <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="bg-white/5 border border-white/10 p-5 md:p-6 rounded-[2rem] flex flex-col justify-between"
+             >
+                <p className="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-widest">Kelengkapan</p>
+                <div className="flex items-end gap-3 md:gap-4 mt-2">
                    <div>
-                      <span className="block text-3xl font-black">{stats.photo}</span>
-                      <span className="text-[9px] text-slate-500 font-bold uppercase">Foto</span>
+                      <span className="block text-2xl md:text-3xl font-black">{stats.photo}</span>
+                      <span className="text-[8px] md:text-[9px] text-slate-500 font-bold uppercase">Foto</span>
                    </div>
-                   <div className="w-px h-8 bg-white/10" />
+                   <div className="w-px h-6 md:h-8 bg-white/10" />
                    <div>
-                      <span className="block text-3xl font-black">{stats.sign}</span>
-                      <span className="text-[9px] text-slate-500 font-bold uppercase">TTD</span>
+                      <span className="block text-2xl md:text-3xl font-black">{stats.sign}</span>
+                      <span className="text-[8px] md:text-[9px] text-slate-500 font-bold uppercase">TTD</span>
                    </div>
                 </div>
-             </div>
+             </motion.div>
           </div>
 
           {/* Table Area */}
@@ -296,8 +336,8 @@ export default function Dashboard() {
                 <thead>
                   <tr className="bg-white/[0.02] text-[10px] font-black uppercase tracking-widest text-slate-500 border-b border-white/5">
                     <th className="p-6">Informasi Tamu</th>
-                    <th className="p-6">Maksud / Pesan</th>
-                    <th className="p-6">Waktu</th>
+                    <th className="p-6 hidden md:table-cell">Maksud / Pesan</th>
+                    <th className="p-6 hidden sm:table-cell">Waktu</th>
                     <th className="p-6 text-center">Lampiran</th>
                     <th className="p-6 text-right">Aksi</th>
                   </tr>
@@ -307,21 +347,26 @@ export default function Dashboard() {
                   {filteredData.map((item, idx) => (
                     <motion.tr
                       key={item.id}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      transition={{ delay: idx * 0.05 }}
-                      className="hover:bg-white/[0.02] transition-colors group"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.98 }}
+                      transition={{
+                        delay: Math.min(idx * 0.03, 0.5),
+                        type: "spring",
+                        stiffness: 100,
+                        damping: 15
+                      }}
+                      className="hover:bg-white/[0.03] transition-colors group"
                     >
                       <td className="p-6">
-                        <div className="font-bold text-white group-hover:text-blue-400 transition-colors">{item.nama}</div>
-                        <div className="text-xs text-slate-500 font-medium">{item.instansi}</div>
+                        <div className="font-bold text-white group-hover:text-blue-400 transition-colors truncate max-w-[120px] sm:max-w-none">{item.nama}</div>
+                        <div className="text-xs text-slate-500 font-medium truncate max-w-[120px] sm:max-w-none">{item.instansi}</div>
                       </td>
-                      <td className="p-6">
+                      <td className="p-6 hidden md:table-cell">
                         <div className="text-sm text-slate-300 line-clamp-1 max-w-[200px]">{item.maksud || "-"}</div>
                         <div className="text-[10px] text-slate-600 line-clamp-1 max-w-[200px]">{item.tujuan || "-"}</div>
                       </td>
-                      <td className="p-6">
+                      <td className="p-6 hidden sm:table-cell">
                         <span className="px-2 py-1 bg-white/5 border border-white/10 rounded text-[10px] font-bold text-slate-400">
                           {formatDate(item.tanggal)}
                         </span>
@@ -346,7 +391,12 @@ export default function Dashboard() {
                       </td>
                       <td className="p-6 text-right">
                         <div className="flex justify-end gap-2">
-                          <button className="p-2 bg-white/5 border border-white/10 rounded-lg hover:text-blue-400 transition-all"><Eye className="w-4 h-4" /></button>
+                          <button
+                            onClick={() => setSelectedEntry(item)}
+                            className="p-2 bg-white/5 border border-white/10 rounded-lg hover:text-blue-400 transition-all"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
                           <button
                             onClick={() => handleDelete(item.id)}
                             className="p-2 bg-white/5 border border-white/10 rounded-lg hover:text-red-500 transition-all"
@@ -372,6 +422,106 @@ export default function Dashboard() {
           </GlassCard>
         </div>
       </main>
+
+      {/* Detail Modal */}
+      <AnimatePresence>
+        {selectedEntry && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedEntry(null)}
+              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-2xl bg-slate-900 border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl"
+            >
+              <div className="p-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+                <h3 className="text-xl font-bold flex items-center gap-2">
+                  <Users className="w-5 h-5 text-blue-500" />
+                  Detail Tamu
+                </h3>
+                <button
+                  onClick={() => setSelectedEntry(null)}
+                  className="p-2 hover:bg-white/5 rounded-full transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              <div className="p-8 overflow-y-auto max-h-[70vh]">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-6">
+                    <div>
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-3 block">Foto Dokumentasi</label>
+                      <div className="aspect-[4/3] relative rounded-2xl overflow-hidden border border-white/10 bg-slate-800">
+                        {selectedEntry.image_url ? (
+                          <Image src={selectedEntry.image_url} alt="Foto" fill className="object-cover" />
+                        ) : (
+                          <div className="absolute inset-0 flex items-center justify-center text-slate-600 italic text-sm">Tidak ada foto</div>
+                        )}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-3 block">Tanda Tangan</label>
+                      <div className="h-32 relative rounded-2xl overflow-hidden border border-white/10 bg-white p-4">
+                        {selectedEntry.signature_url ? (
+                          <Image src={selectedEntry.signature_url} alt="TTD" fill className="object-contain p-4" />
+                        ) : (
+                          <div className="absolute inset-0 flex items-center justify-center text-slate-400 italic text-sm">Tidak ada TTD</div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    <div>
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1 block">Nama Lengkap</label>
+                      <p className="text-xl font-bold text-white">{selectedEntry.nama || "-"}</p>
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1 block">Asal Instansi</label>
+                      <p className="text-slate-300 font-medium">{selectedEntry.instansi || "-"}</p>
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1 block">Waktu Kunjungan</label>
+                      <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-500/10 border border-blue-500/20 rounded-lg text-blue-400 text-xs font-bold">
+                        <Calendar className="w-3.5 h-3.5" />
+                        {formatDate(selectedEntry.tanggal)}
+                      </div>
+                    </div>
+                    <div className="pt-4 border-t border-white/5">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block">Maksud & Tujuan</label>
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/5">
+                        <p className="text-sm text-slate-300 leading-relaxed">{selectedEntry.maksud || "-"}</p>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block">Pesan & Kesan</label>
+                      <div className="bg-blue-600/10 rounded-xl p-4 border border-blue-500/20">
+                        <p className="text-sm text-blue-100 leading-relaxed">{selectedEntry.tujuan || "-"}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-6 border-t border-white/5 bg-white/[0.02] flex justify-end">
+                <button
+                  onClick={() => setSelectedEntry(null)}
+                  className="px-8 py-3 bg-white text-slate-900 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-colors"
+                >
+                  Tutup
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -387,18 +537,22 @@ function StatCard({ label, value, icon, color, index }: { label: string, value: 
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.1 }}
-      whileHover={{ y: -5, scale: 1.02 }}
-      className="bg-white/5 border border-white/10 p-6 rounded-[2rem] flex flex-col justify-between transition-shadow hover:shadow-2xl hover:shadow-blue-500/10"
+      transition={{ delay: index * 0.1, type: "spring", stiffness: 100 }}
+      whileHover={{
+        y: -10,
+        scale: 1.02,
+        transition: { type: "spring", stiffness: 400, damping: 10 }
+      }}
+      className="bg-white/5 border border-white/10 p-5 md:p-6 rounded-[2rem] flex flex-col justify-between transition-all hover:border-blue-500/30 hover:bg-white/[0.08] group"
     >
       <div className="flex items-start justify-between">
-        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">{label}</p>
-        <div className={cn("p-2 rounded-xl border", colors[color])}>
+        <p className="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-widest">{label}</p>
+        <div className={cn("p-1.5 md:p-2 rounded-xl border", colors[color])}>
           {icon}
         </div>
       </div>
-      <div className="mt-4">
-        <h3 className="text-4xl font-black">{value}</h3>
+      <div className="mt-2 md:mt-4">
+        <h3 className="text-2xl md:text-4xl font-black">{value}</h3>
       </div>
     </motion.div>
   );
