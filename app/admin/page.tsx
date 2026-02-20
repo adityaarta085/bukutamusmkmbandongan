@@ -2,12 +2,16 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import { Lock, User, Key, ArrowLeft, Info } from "lucide-react";
+import {
+  Lock,
+  User,
+  Key,
+  ArrowLeft,
+  AlertCircle,
+  Loader2
+} from "lucide-react";
 import Link from "next/link";
-import { GlassCard } from "@/components/ui/GlassCard";
-import { ShinyButton } from "@/components/ui/ShinyButton";
-import FuturisticBackground from "@/components/canvas/FuturisticBackground";
+import Image from "next/image";
 import { loginAction } from "@/lib/actions";
 
 export default function AdminLogin() {
@@ -37,78 +41,84 @@ export default function AdminLogin() {
   };
 
   return (
-    <main className="min-h-screen relative flex items-center justify-center p-6">
-      <FuturisticBackground />
-
-      <div className="max-w-md w-full relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8"
-        >
-          <div className="w-20 h-20 bg-blue-600/10 rounded-3xl flex items-center justify-center border border-blue-500/20 mx-auto mb-6">
-            <Lock className="w-10 h-10 text-blue-500" />
+    <main className="min-h-screen bg-[#F0F6FF] flex flex-col items-center justify-center p-4">
+      <div className="max-w-md w-full">
+        <div className="text-center mb-8">
+          <div className="flex justify-center mb-4">
+            <div className="w-20 h-20 bg-white rounded-full shadow-lg shadow-blue-100 flex items-center justify-center p-2">
+              <Image
+                src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiN3lb6zD8UmdVfbhENgNWXK1OjWDvwrZVUaEyMyjcOIxgzqIu5wzGUZusOD9WYXVVupp87PQ4lZcZl6ZyzPtFe8h4-TnjMLz31oDylO9UScGA0bi_miR8MKYufzevuezpGhNrpaOrgixQiPBkS9iZb8JalBVD5ueOhN4TB9x3T9N2yG4rwjEdDUGkoK0k/s554/images%20(2).png"
+                alt="Logo"
+                width={80}
+                height={80}
+                className="w-full h-full object-contain"
+                unoptimized
+              />
+            </div>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Admin Panel</h1>
-          <p className="text-slate-400">Silakan masuk untuk mengelola data tamu.</p>
-        </motion.div>
+          <h1 className="text-2xl font-bold text-slate-900">Admin Login</h1>
+          <p className="text-slate-500 text-sm mt-1">Silakan masuk untuk mengakses dashboard</p>
+        </div>
 
-        <GlassCard>
-          <form onSubmit={handleLogin} className="space-y-6">
+        <div className="bg-white rounded-[2rem] shadow-xl shadow-blue-100/50 p-8 border border-white">
+          <form onSubmit={handleLogin} className="space-y-5">
             {error && (
-              <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-start gap-3">
-                <Info className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
-                <p className="text-sm text-red-200">{error}</p>
+              <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100 flex items-center">
+                <AlertCircle className="w-4 h-4 mr-2 flex-shrink-0" />
+                <span>{error}</span>
               </div>
             )}
 
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">Username</label>
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">Username</label>
               <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                 <input
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-2xl focus:border-blue-500/50 focus:bg-white/10 outline-none transition-all text-white"
+                  className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition text-slate-900 placeholder:text-slate-400"
                   placeholder="Username admin"
                   required
                 />
               </div>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">Password</label>
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">Password</label>
               <div className="relative">
-                <Key className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                <Key className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-2xl focus:border-blue-500/50 focus:bg-white/10 outline-none transition-all text-white"
+                  className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition text-slate-900 placeholder:text-slate-400"
                   placeholder="Password admin"
                   required
                 />
               </div>
             </div>
 
-            <ShinyButton
+            <button
               type="submit"
               disabled={loading}
-              className="w-full py-5"
+              className="w-full py-3.5 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition shadow-lg shadow-slate-200 flex items-center justify-center mt-4"
             >
-              {loading ? "Memproses..." : "Masuk ke Dashboard"}
-            </ShinyButton>
+              <span>{loading ? "Memproses..." : "Masuk Dashboard"}</span>
+              {loading && <Loader2 className="w-4 h-4 ml-2 animate-spin" />}
+            </button>
           </form>
-        </GlassCard>
+        </div>
 
-        <Link
-          href="/"
-          className="flex items-center justify-center gap-2 mt-8 text-slate-500 hover:text-white transition-colors text-sm font-medium"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Kembali ke Halaman Depan
-        </Link>
+        <div className="mt-8 text-center">
+          <Link
+            href="/"
+            className="text-slate-500 text-sm font-medium hover:text-slate-800 transition flex items-center justify-center mx-auto py-2 px-4 rounded-lg hover:bg-white"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Kembali ke Halaman Tamu
+          </Link>
+        </div>
       </div>
     </main>
   );

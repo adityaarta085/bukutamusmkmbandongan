@@ -19,8 +19,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className="dark">
-      <body className={cn(inter.variable, "antialiased selection:bg-blue-500/30 overflow-x-hidden")}>
+    <html lang="id">
+      <body className={cn(inter.variable, "antialiased overflow-x-hidden")}>
         <SmoothScroll>
           <PageTransition>
             {children}
