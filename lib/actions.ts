@@ -45,30 +45,50 @@ export async function uploadFileAction(formData: FormData) {
 }
 
 export async function loginAction(username: string, password: string) {
-  const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+  const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/admin?username=eq.${username}&password=eq.${password}`, {
-    headers: {
-      "apikey": SUPABASE_ANON_KEY,
-      "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
-    }
-  });
-
-  const data = await res.json();
-
-  if (data && data.length > 0) {
-    const admin = data[0];
-    const cookieStore = await cookies();
-    cookieStore.set("admin_session", "true", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24 // 1 day
-    });
-    return { success: true, isPremium: admin.is_premium };
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    console.error("Login configuration is incomplete: missing Supabase env variables.");
+    return { success: false, error: "Konfigurasi server belum lengkap." };
   }
 
-  return { success: false, error: "Invalid credentials" };
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/admin?username=eq.${username}&password=eq.${password}`, {
+      headers: {
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
+      }
+    });
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error("Login request to Supabase failed", {
+        status: res.status,
+        statusText: res.statusText,
+        body: errorText
+      });
+      return { success: false, error: "Gagal memproses login. Silakan coba lagi." };
+    }
+
+    const data = await res.json();
+
+    if (data && data.length > 0) {
+      const admin = data[0];
+      const cookieStore = await cookies();
+      cookieStore.set("admin_session", "true", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 60 * 60 * 24 // 1 day
+      });
+      return { success: true, isPremium: admin.is_premium };
+    }
+
+    return { success: false, error: "Invalid credentials" };
+  } catch (error) {
+    console.error("Unexpected login error", error);
+    return { success: false, error: "Terjadi gangguan pada server. Silakan coba lagi." };
+  }
 }
 
 export async function logoutAction() {
