@@ -45,38 +45,63 @@ export async function uploadFileAction(formData: FormData) {
 }
 
 export async function loginAction(username: string, password: string) {
-  const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+  try {
+    const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/admin?username=eq.${username}&password=eq.${password}`, {
-    headers: {
-      "apikey": SUPABASE_ANON_KEY,
-      "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+      return { success: false, error: "Konfigurasi Supabase tidak ditemukan." };
     }
-  });
 
-  const data = await res.json();
-
-  if (data && data.length > 0) {
-    const admin = data[0];
-    const cookieStore = await cookies();
-    cookieStore.set("admin_session", "true", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24 // 1 day
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/admin?username=eq.${username}&password=eq.${password}`, {
+      headers: {
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
+      },
+      cache: 'no-store'
     });
-    return { success: true, isPremium: admin.is_premium };
-  }
 
-  return { success: false, error: "Invalid credentials" };
+    if (!res.ok) {
+      return { success: false, error: `Gagal menghubungi database: ${res.statusText}` };
+    }
+
+    const data = await res.json();
+
+    if (data && Array.isArray(data) && data.length > 0) {
+      const admin = data[0];
+      const cookieStore = await cookies();
+      cookieStore.set("admin_session", "true", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: 60 * 60 * 24 // 1 day
+      });
+      return { success: true, isPremium: admin.is_premium };
+    }
+
+    return { success: false, error: "Username atau password salah." };
+  } catch (err) {
+    console.error("Login action error:", err);
+    return { success: false, error: "Terjadi kesalahan internal pada server." };
+  }
 }
 
 export async function logoutAction() {
-  const cookieStore = await cookies();
-  cookieStore.delete("admin_session");
+  try {
+    const cookieStore = await cookies();
+    cookieStore.delete("admin_session");
+  } catch (err) {
+    console.error("Logout error:", err);
+  }
 }
 
 export async function checkAuthAction() {
-  const cookieStore = await cookies();
-  return cookieStore.get("admin_session")?.value === "true";
+  try {
+    const cookieStore = await cookies();
+    return cookieStore.get("admin_session")?.value === "true";
+  } catch (err) {
+    console.error("Check auth error:", err);
+    return false;
+  }
 }

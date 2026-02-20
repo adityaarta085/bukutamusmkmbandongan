@@ -23,7 +23,7 @@ import {
   ImageOff
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { logoutAction } from "@/lib/actions";
+import { logoutAction, checkAuthAction } from "@/lib/actions";
 import { cn } from "@/lib/utils";
 
 const SUPABASE_TABLE = process.env.NEXT_PUBLIC_SUPABASE_TABLE || "userdata";
@@ -53,8 +53,16 @@ export default function AdminDashboard() {
   const [isPremium, setIsPremium] = useState(false);
 
   useEffect(() => {
-    setIsPremium(localStorage.getItem("adminPremium") === "true");
-    fetchData();
+    const checkAuth = async () => {
+      const isAuthenticated = await checkAuthAction();
+      if (!isAuthenticated) {
+        router.push("/admin");
+        return;
+      }
+      setIsPremium(localStorage.getItem("adminPremium") === "true");
+      fetchData();
+    };
+    checkAuth();
   }, []);
 
   const fetchData = async () => {
