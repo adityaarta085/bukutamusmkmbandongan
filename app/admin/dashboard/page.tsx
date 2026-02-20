@@ -27,14 +27,25 @@ import { logoutAction } from "@/lib/actions";
 import { cn } from "@/lib/utils";
 
 const SUPABASE_TABLE = process.env.NEXT_PUBLIC_SUPABASE_TABLE || "userdata";
+interface GuestEntry {
+  id: string;
+  nama: string;
+  instansi: string;
+  maksud: string;
+  tujuan: string;
+  tanggal: string;
+  image_url?: string;
+  signature_url?: string;
+}
+
 
 export default function AdminDashboard() {
   const router = useRouter();
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<GuestEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [search, setSearch] = useState("");
-  const [selectedEntry, setSelectedEntry] = useState<any | null>(null);
+  const [selectedEntry, setSelectedEntry] = useState<GuestEntry | null>(null);
   const [idToDelete, setIdToDelete] = useState<string | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -80,7 +91,7 @@ export default function AdminDashboard() {
       if (error) throw error;
       setData(data.filter(item => item.id !== idToDelete));
       setIdToDelete(null);
-    } catch (err) {
+    } catch (_err) {
       alert("Gagal menghapus data.");
     } finally {
       setDeleteLoading(false);
@@ -442,7 +453,7 @@ export default function AdminDashboard() {
                 </div>
                 <div>
                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Kesan & Pesan</label>
-                  <p className="text-sm text-slate-600 bg-blue-50/50 p-3 rounded-xl border border-blue-50/10 italic">"{selectedEntry.tujuan || '-'}"</p>
+                  <p className="text-sm text-slate-600 bg-blue-50/50 p-3 rounded-xl border border-blue-50/10 italic">&quot;{selectedEntry.tujuan || '-'}&quot;</p>
                 </div>
                 <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
                   <Calendar className="w-3.5 h-3.5" />
